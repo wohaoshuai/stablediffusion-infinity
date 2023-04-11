@@ -837,11 +837,30 @@ def run_outpaint(
     generate_num,
     scheduler,
     scheduler_eta,
-    interrogate_mode,
-    state,
+    interrogate_mode
 ):
+    # print("sel_buffer_str:", sel_buffer_str)
+    state = model_output_state
     data = base64.b64decode(str(sel_buffer_str))
     pil = Image.open(io.BytesIO(data))
+    # pil.show()
+    print("prompt_text:", prompt_text)
+    print("negative_prompt_text:", negative_prompt_text)
+    print("strength:", strength)
+    print("guidance:", guidance)
+    print("step:", step)
+    print("resize_check:", resize_check)
+    print("fill_mode:", fill_mode)
+    print("enable_safety:", enable_safety)
+    print("use_correction:", use_correction)
+    print("enable_img2img:", enable_img2img)
+    print("use_seed:", use_seed)
+    print("seed_val:", seed_val)
+    print("generate_num:", generate_num)
+    print("scheduler:", scheduler)
+    print("scheduler_eta:", scheduler_eta)
+    print("interrogate_mode:", interrogate_mode)
+    print("state:", state)
     if interrogate_mode:
         if "interrogator" not in model:
             model["interrogator"] = Interrogator()
@@ -861,6 +880,7 @@ def run_outpaint(
             state,
         )
     width, height = pil.size
+    print("width, height:", width, height)
     sel_buffer = np.array(pil)
     cur_model = get_model()
     images = cur_model.run(
@@ -892,6 +912,7 @@ def run_outpaint(
         out[:, :, 0:3] = np.array(resized_img)
         out[:, :, -1] = 255
         out_pil = Image.fromarray(out)
+        # out_pil.show()
         out_buffer = io.BytesIO()
         out_pil.save(out_buffer, format="PNG")
         out_buffer.seek(0)
@@ -899,10 +920,10 @@ def run_outpaint(
         base64_str = base64_bytes.decode("ascii")
         base64_str_lst.append(base64_str)
     return (
-        gr.update(label=str(state + 1), value=",".join(base64_str_lst),),
+        gr.update(label=str(1), value=",".join(base64_str_lst),),
         gr.update(label="Prompt"),
-        state + 1,
     )
+        # state + 1,
 
 
 def load_js(name):
@@ -1165,10 +1186,11 @@ with blocks as demo:
             sd_scheduler,
             sd_scheduler_eta,
             interrogate_check,
-            model_output_state,
+            # model_output_state,
         ],
-        outputs=[model_output, sd_prompt, model_output_state],
+        outputs=[model_output, sd_prompt],#model_output_state],
         _js=proceed_button_js,
+        api_name="outpaint"
     )
     # cancel button can also remove error overlay
     if tuple(map(int,gr.__version__.split("."))) >= (3,6):
