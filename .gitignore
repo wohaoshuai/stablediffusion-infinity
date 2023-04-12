@@ -7,3 +7,4 @@ csrc/
 travis.sh
 *.iml
 .token
+blip_model

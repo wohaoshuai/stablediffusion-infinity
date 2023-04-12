@@ -2,7 +2,8 @@ import io
 import base64
 import os
 import sys
-
+import cv2
+from rembg import remove
 import numpy as np
 import torch
 from torch import autocast
@@ -12,6 +13,7 @@ assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upg
 
 from diffusers.configuration_utils import FrozenDict
 from diffusers import (
+    DiffusionPipeline,
     StableDiffusionPipeline,
     StableDiffusionInpaintPipeline,
     StableDiffusionImg2ImgPipeline,
@@ -22,7 +24,10 @@ from diffusers import (
     StableDiffusionUpscalePipeline,
     DPMSolverMultistepScheduler,
     PNDMScheduler,
+    StableDiffusionControlNetPipeline,
+    ControlNetModel
 )
+from stable_diffusion_controlnet_inpaint import StableDiffusionControlNetInpaintPipeline
 from diffusers.models import AutoencoderKL
 from PIL import Image
 from PIL import ImageOps
@@ -235,7 +240,44 @@ def my_resize(width, height):
     elif smaller < 450:
         factor = 1.125
     return int(factor * width) // 8 * 8, int(factor * height) // 8 * 8
+def add_black_background(image):
+    # Create a new black image with the same size as the original image
+    background = Image.new('RGB', image.size, color='black')
 
+    # Paste the original image onto the black background image
+    background.paste(image, (0, 0))
+
+    # Return the new image
+    return background
+def invert_image_colors(input_image):
+    # Convert the input image to grayscale
+    grayscale_image = input_image.convert('L')
+    
+    # Invert the grayscale values
+    inverted_data = [(255 - pixel) for pixel in grayscale_image.getdata()]
+    
+    # Create a new image with the inverted grayscale values
+    inverted_image = Image.new('L', input_image.size)
+    inverted_image.putdata(inverted_data)
+    
+    # Convert the inverted grayscale image to an RGB image
+    rgb_image = inverted_image.convert('RGB')
+    
+    return rgb_image
+
+def generate_canny_image(input_image, low_threshold=100, high_threshold=200):
+    image_array = np.array(input_image)
+    # Apply Canny edge detection to the input image
+    image = cv2.Canny(image_array, low_threshold, high_threshold)
+    
+    # Convert the 2D image to a 3D image with 3 channels
+    image = image[:, :, None]
+    image = np.concatenate([image, image, image], axis=2)
+    
+    # Convert the numpy array to a PIL Image object
+    canny_image = Image.fromarray(image)
+    
+    return canny_image
 
 def load_learned_embed_in_clip(
     learned_embeds_path, text_encoder, tokenizer, token=None
@@ -296,6 +338,7 @@ class StableDiffusionInpaint:
                 vae.to(torch.float16)
             if original_checkpoint:
                 print(f"Converting & Loading {model_path}")
+                print("testing2")
                 from convert_checkpoint import convert_checkpoint
 
                 pipe = convert_checkpoint(model_path, inpainting=True)
@@ -311,6 +354,7 @@ class StableDiffusionInpaint:
                     feature_extractor=pipe.feature_extractor,
                 )
             else:
+                print("testing1")
                 print(f"Loading {model_name}")
                 if device == "cuda" and not args.fp32:
                     inpaint = StableDiffusionInpaintPipeline.from_pretrained(
@@ -324,6 +368,10 @@ class StableDiffusionInpaint:
                     inpaint = StableDiffusionInpaintPipeline.from_pretrained(
                         model_name, use_auth_token=token, vae=vae
                     )
+                    controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny")
+                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, controlnet=controlnet, safety_checker=None)
+                    print('use control net inpaint pipline')
+                    # pipe = DiffusionPipeline.from_pretrained(model_name, custom_pipeline="stable_diffusion_controlnet_inpaint")
             if os.path.exists("./embeddings"):
                 print("Note that StableDiffusionInpaintPipeline + embeddings is untested")
                 for item in os.listdir("./embeddings"):
@@ -392,6 +440,8 @@ class StableDiffusionInpaint:
         scheduler_eta=0.0,
         **kwargs,
     ):
+        canny_img = generate_canny_image(image_pil)
+        foreground_img = add_black_background(image_pil)
         inpaint = self.inpaint
         selected_scheduler = scheduler_dict.get(scheduler, scheduler_dict["PLMS"])
         for item in [inpaint]:
@@ -436,16 +486,23 @@ class StableDiffusionInpaint:
             inpaint_func = inpaint
             init_image = Image.fromarray(img)
             mask_image = Image.fromarray(mask)
+            input_foreground = remove(image_pil, only_mask=True)
+            input_foreground = invert_image_colors(input_foreground)
+            # foreground_img.show()
+            # canny_img.show()
+            # input_foreground.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
             if True:
                 images = inpaint_func(
                     prompt=prompt,
-                    image=init_image.resize(
+                    image=foreground_img.resize(
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
-                    mask_image=mask_image.resize((process_width, process_height)),
+                    mask_image=input_foreground.resize((process_width, process_height)),
+                    controlnet_conditioning_image=canny_img.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
+                    controlnet_conditioning_scale=0.45,
                     **extra_kwargs,
                 )["images"]
         return images
@@ -919,6 +976,7 @@ def run_outpaint(
         base64_bytes = base64.b64encode(out_buffer.read())
         base64_str = base64_bytes.decode("ascii")
         base64_str_lst.append(base64_str)
+        # image.show()
     return (
         gr.update(label=str(1), value=",".join(base64_str_lst),),
         gr.update(label="Prompt"),
