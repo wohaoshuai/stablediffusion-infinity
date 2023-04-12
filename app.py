@@ -1248,7 +1248,8 @@ with blocks as demo:
         ],
         outputs=[model_output, sd_prompt],#model_output_state],
         _js=proceed_button_js,
-        api_name="outpaint"
+        api_name="outpaint",
+        queue=True
     )
     # cancel button can also remove error overlay
     if tuple(map(int,gr.__version__.split("."))) >= (3,6):
@@ -1274,10 +1275,13 @@ except:
     pass
 
 if RUN_IN_SPACE:
-    demo.launch()
+    print('run in the queue 1')
+    demo.queue(api_open=False).launch()
 elif args.debug:
+    print('run in the queue 2')
     launch_kwargs["server_name"] = "0.0.0.0"
-    demo.queue().launch(**launch_kwargs)
+    demo.queue(api_open=False).launch(**launch_kwargs)
 else:
-    demo.queue().launch(**launch_kwargs)
+    print('run in the queue 3')
+    demo.queue(api_open=True).launch(**launch_kwargs)
 
