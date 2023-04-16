@@ -834,6 +834,12 @@ class StableDiffusion:
 
 
 def get_model(token="", model_choice="", model_path=""):
+    model_name = "stabilityai/stable-diffusion-2-inpainting"
+    tmp = StableDiffusionInpaint(
+        token=token, model_name=model_name, model_path=model_path
+    )
+    model["model"] = tmp
+    return  model["model"]
     if "model" not in model:
         model_name = ""
         if args.local_model:
