@@ -364,7 +364,7 @@ class StableDiffusionInpaint:
                     #     use_auth_token=token,
                     #     vae=vae,
                     # )
-                    model_name = "stabilityai/stable-diffusion-2-inpainting"
+                    model_name = "ckpt/realistic_vision_inpainting"
                     # controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "runwayml/stable-diffusion-inpainting"
