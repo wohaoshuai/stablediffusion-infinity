@@ -1,5 +1,7 @@
 # Setup Guide
 
+pip install torch torchvision torchaudio scipy scikit-image forge diffusers==0.14.0 transformers ftfy accelerate opencv-python gradio pytorch-lightning==1.7.7 einops==0.4.1 omegaconf==2.2.3 timm
+
 Please install conda at first ([miniconda](https://docs.conda.io/en/latest/miniconda.html) or [anaconda](https://docs.anaconda.com/anaconda/install/)). 
 
 - [Setup with Linux/Nvidia GPU](#linux)
