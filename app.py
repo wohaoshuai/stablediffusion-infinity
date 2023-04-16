@@ -1267,11 +1267,12 @@ launch_kwargs.pop("local_model", None)
 launch_kwargs.pop("fp32", None)
 launch_kwargs.pop("lowvram", None)
 launch_kwargs.update(launch_extra_kwargs)
+launch_kwargs["share"] = True
 try:
     import google.colab
 
     launch_kwargs["debug"] = True
-    launch_kwargs["share"] = True
+    # launch_kwargs["share"] = True
 except:
     pass
 
@@ -1284,5 +1285,6 @@ elif args.debug:
     demo.queue(api_open=False).launch(**launch_kwargs)
 else:
     print('run in the queue 3')
+    print('launch-kwargs', launch_kwargs)
     demo.queue(api_open=True).launch(**launch_kwargs)
 
