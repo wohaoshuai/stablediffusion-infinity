@@ -1208,6 +1208,7 @@ launch_kwargs.pop("local_model", None)
 launch_kwargs.pop("fp32", None)
 launch_kwargs.pop("lowvram", None)
 launch_kwargs.update(launch_extra_kwargs)
+launch_kwargs["share"] = True
 try:
     import google.colab
 
