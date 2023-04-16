@@ -357,13 +357,17 @@ class StableDiffusionInpaint:
                 print("testing1")
                 print(f"Loading {model_name}")
                 if device == "cuda" and not args.fp32:
-                    inpaint = StableDiffusionInpaintPipeline.from_pretrained(
-                        model_name,
-                        revision="fp16",
-                        torch_dtype=torch.float16,
-                        use_auth_token=token,
-                        vae=vae,
-                    )
+                    # inpaint = StableDiffusionInpaintPipeline.from_pretrained(
+                    #     model_name,
+                    #     revision="fp16",
+                    #     torch_dtype=torch.float16,
+                    #     use_auth_token=token,
+                    #     vae=vae,
+                    # )
+                    model_name = "stabilityai/stable-diffusion-2-inpainting"
+                    controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny")
+                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, revision="fp16", torch_dtype=torch.float16, vae=vae, controlnet=controlnet, safety_checker=None)
+                    print('use control net inpaint pipline - cuda with model:', model_name)
                 else:
                     inpaint = StableDiffusionInpaintPipeline.from_pretrained(
                         model_name, use_auth_token=token, vae=vae
