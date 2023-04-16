@@ -1212,6 +1212,7 @@ try:
     import google.colab
 
     launch_kwargs["debug"] = True
+    launch_kwargs["share"] = True
 except:
     pass
 
