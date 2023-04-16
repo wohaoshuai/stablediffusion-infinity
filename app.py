@@ -365,8 +365,8 @@ class StableDiffusionInpaint:
                     #     vae=vae,
                     # )
                     model_name = "stabilityai/stable-diffusion-2-inpainting"
-                    controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny")
-                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, controlnet=controlnet, safety_checker=None)
+                    controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
+                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
                     print('use control net inpaint pipline - cuda with model:', model_name)
                 else:
                     inpaint = StableDiffusionInpaintPipeline.from_pretrained(
