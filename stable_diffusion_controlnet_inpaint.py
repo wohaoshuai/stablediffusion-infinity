@@ -719,6 +719,7 @@ class StableDiffusionControlNetInpaintPipeline(DiffusionPipeline):
     def prepare_masked_image_latents(
         self, masked_image, batch_size, height, width, dtype, device, generator, do_classifier_free_guidance
     ):
+        print('prepare_masked_image_latents', device, dtype)
         masked_image = masked_image.to(device=device, dtype=dtype)
 
         # encode the mask image into latents space so we can concatenate it to the latents
