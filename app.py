@@ -366,14 +366,17 @@ class StableDiffusionInpaint:
                     # )
                     # model_name = "stabilityai/stable-diffusion-2-inpainting"
                     # controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
-                    model_name = "runwayml/stable-diffusion-inpainting"
+                    # model_name = "runwayml/stable-diffusion-inpainting"
+                    # model_name = "runwayml/stable-diffusion-inpainting"
+                    model_name = "SG161222/Realistic_Vision_V2.0"
                     controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
                     print('use control net inpaint pipline - cuda with model:', model_name)
                 else:
-                    inpaint = StableDiffusionInpaintPipeline.from_pretrained(
-                        model_name, use_auth_token=token, vae=vae
-                    )
+                    # inpaint = StableDiffusionInpaintPipeline.from_pretrained(
+                    #     model_name, use_auth_token=token, vae=vae
+                    # )
+                    model_name = "stabilityai/stable-diffusion-2-inpainting"
                     controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny")
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, controlnet=controlnet, safety_checker=None)
                     print('use control net inpaint pipline')
@@ -1279,7 +1282,7 @@ launch_kwargs.pop("local_model", None)
 launch_kwargs.pop("fp32", None)
 launch_kwargs.pop("lowvram", None)
 launch_kwargs.update(launch_extra_kwargs)
-launch_kwargs["share"] = True
+# launch_kwargs["share"] = True
 try:
     import google.colab
 
