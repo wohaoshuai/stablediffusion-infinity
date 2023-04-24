@@ -3,11 +3,12 @@ import base64
 import os
 import sys
 import cv2
-from rembg import remove
+from rembg import remove, new_session
 import numpy as np
 import torch
 from torch import autocast
 import diffusers
+session = new_session(model_name="isnet-general-use") 
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
 
@@ -279,6 +280,29 @@ def generate_canny_image(input_image, low_threshold=100, high_threshold=200):
     
     return canny_image
 
+def img_to_bw(img):
+    # Convert image to RGBA format
+    img = img.convert('RGBA')
+    
+    # Create a new image with same size as original
+    bw_img = Image.new('L', img.size, color=0)
+    
+    # Parse through pixels to transform to b/w
+    pixels = img.load()
+    bw_pixels = bw_img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            # If pixel is non-transparent, set it to white (255)
+            # If pixel is transparent, set it to black (0)
+            if pixels[i, j][3] == 255:
+                bw_pixels[i, j] = 255
+            else:
+                bw_pixels[i, j] = 0
+    
+    # Return the new image
+    return bw_img
+
+
 def load_learned_embed_in_clip(
     learned_embeds_path, text_encoder, tokenizer, token=None
 ):
@@ -449,8 +473,7 @@ class StableDiffusionInpaint:
         scheduler_eta=0.0,
         **kwargs,
     ):
-        canny_img = generate_canny_image(image_pil)
-        foreground_img = add_black_background(image_pil)
+        foreground_img = image_pil
         inpaint = self.inpaint
         selected_scheduler = scheduler_dict.get(scheduler, scheduler_dict["PLMS"])
         for item in [inpaint]:
@@ -495,10 +518,11 @@ class StableDiffusionInpaint:
             inpaint_func = inpaint
             init_image = Image.fromarray(img)
             mask_image = Image.fromarray(mask)
-            input_foreground = remove(image_pil, only_mask=True)
-            input_foreground = invert_image_colors(input_foreground)
-            # foreground_img.show()
-            # canny_img.show()
+            # input_foreground = remove(image_pil, session=session, only_mask=True)
+            # input_foreground = invert_image_colors(input_foreground)
+            maskimg = img_to_bw(foreground_img)
+            maskimg = invert_image_colors(maskimg)
+            canny_img = generate_canny_image(maskimg)
             # input_foreground.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
             if True:
@@ -507,7 +531,7 @@ class StableDiffusionInpaint:
                     image=foreground_img.resize(
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
-                    mask_image=input_foreground.resize((process_width, process_height)),
+                    mask_image=maskimg.resize((process_width, process_height)),
                     controlnet_conditioning_image=canny_img.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
@@ -992,7 +1016,7 @@ def run_outpaint(
         base64_bytes = base64.b64encode(out_buffer.read())
         base64_str = base64_bytes.decode("ascii")
         base64_str_lst.append(base64_str)
-        # image.show()
+        image.show()
     return (
         gr.update(label=str(1), value=",".join(base64_str_lst),),
         gr.update(label="Prompt"),
