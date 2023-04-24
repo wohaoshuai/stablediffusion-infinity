@@ -301,7 +301,21 @@ def img_to_bw(img):
     
     # Return the new image
     return bw_img
+def erode_image(image, kernel_size=(3,3), iterations=1):
+    # Convert PIL Image to OpenCV image
+    cv_image = np.array(image)
+    cv_image = cv_image[:,:,::-1].copy()
 
+    # Define the kernel for erosion operation
+    kernel = np.ones(kernel_size, np.uint8)
+
+    # Perform erosion operation
+    eroded_cv_image = cv2.erode(cv_image, kernel, iterations=iterations)
+
+    # Convert OpenCV image to PIL Image
+    eroded_pil_image = Image.fromarray(eroded_cv_image[:,:,::-1])
+
+    return eroded_pil_image
 
 def load_learned_embed_in_clip(
     learned_embeds_path, text_encoder, tokenizer, token=None
@@ -521,7 +535,9 @@ class StableDiffusionInpaint:
             # input_foreground = remove(image_pil, session=session, only_mask=True)
             # input_foreground = invert_image_colors(input_foreground)
             maskimg = img_to_bw(foreground_img)
+            # foreground_img.show()
             maskimg = invert_image_colors(maskimg)
+            # maskimg.show()
             canny_img = generate_canny_image(maskimg)
             # input_foreground.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
@@ -1016,7 +1032,7 @@ def run_outpaint(
         base64_bytes = base64.b64encode(out_buffer.read())
         base64_str = base64_bytes.decode("ascii")
         base64_str_lst.append(base64_str)
-        image.show()
+        # image.show()
     return (
         gr.update(label=str(1), value=",".join(base64_str_lst),),
         gr.update(label="Prompt"),
