@@ -294,10 +294,10 @@ def img_to_bw(img):
         for j in range(img.size[1]):
             # If pixel is non-transparent, set it to white (255)
             # If pixel is transparent, set it to black (0)
-            if pixels[i, j][3] == 255:
-                bw_pixels[i, j] = 255
-            else:
+            if pixels[i, j][3] < 200:
                 bw_pixels[i, j] = 0
+            else:
+                bw_pixels[i, j] = 255
     
     # Return the new image
     return bw_img
@@ -488,6 +488,7 @@ class StableDiffusionInpaint:
         **kwargs,
     ):
         foreground_img = image_pil
+        # foreground_img.show()
         inpaint = self.inpaint
         selected_scheduler = scheduler_dict.get(scheduler, scheduler_dict["PLMS"])
         for item in [inpaint]:
@@ -532,14 +533,14 @@ class StableDiffusionInpaint:
             inpaint_func = inpaint
             init_image = Image.fromarray(img)
             mask_image = Image.fromarray(mask)
-            # input_foreground = remove(image_pil, session=session, only_mask=True)
-            # input_foreground = invert_image_colors(input_foreground)
+            input_foreground = remove(image_pil, session=session, only_mask=True)
+            input_foreground = invert_image_colors(input_foreground)
             maskimg = img_to_bw(foreground_img)
-            # foreground_img.show()
+            # input_foreground.show()
             maskimg = invert_image_colors(maskimg)
             # maskimg.show()
             canny_img = generate_canny_image(maskimg)
-            # input_foreground.show()
+            # canny_img.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
             if True:
                 images = inpaint_func(
