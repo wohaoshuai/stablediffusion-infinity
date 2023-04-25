@@ -552,7 +552,7 @@ class StableDiffusionInpaint:
                     controlnet_conditioning_image=canny_img.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
-                    controlnet_conditioning_scale=0.0,
+                    controlnet_conditioning_scale=strength,
                     **extra_kwargs,
                 )["images"]
         return images
