@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from torch import autocast
 import diffusers
-session = new_session(model_name="isnet-general-use") 
+session = new_session(model_name="unet") 
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
 
