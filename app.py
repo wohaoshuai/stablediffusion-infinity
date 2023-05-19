@@ -28,6 +28,8 @@ from diffusers import (
     StableDiffusionControlNetPipeline,
     ControlNetModel
 )
+
+
 from stable_diffusion_controlnet_inpaint import StableDiffusionControlNetInpaintPipeline
 from diffusers.models import AutoencoderKL
 from PIL import Image
@@ -402,7 +404,9 @@ class StableDiffusionInpaint:
                     #     use_auth_token=token,
                     #     vae=vae,
                     # )
-                    model_name = "ckpt/realistic_vision_inpainting"
+
+                    # model_name = "ckpt/realistic_vision_inpainting"
+                    model_name = "/home/ubuntu/epicrealism_newEra"
                     # controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "runwayml/stable-diffusion-inpainting"
