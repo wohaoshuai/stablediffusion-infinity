@@ -417,7 +417,7 @@ class StableDiffusionInpaint:
                     # model_name = "SG161222/Realistic_Vision_V2.0"
                     controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
                     inpaintOld = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
-                    inpaint = lora.load_lora_weights(inpaintOld, lora_name, 1.0, 'cuda', torch.float16)
+                    inpaint = lora.load_lora_weights(inpaintOld, lora_name, 0.8, 'cuda', torch.float16)
                     print('use control net inpaint pipline - cuda with model:', model_name)
                 else:
                     # inpaint = StableDiffusionInpaintPipeline.from_pretrained(
