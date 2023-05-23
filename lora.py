@@ -22,6 +22,7 @@ def load_lora_weights(pipeline, checkpoint_path, multiplier, device, dtype):
     LORA_PREFIX_TEXT_ENCODER = "lora_te"
     # load LoRA weight from .safetensors
     state_dict = load_file(checkpoint_path, device=device)
+    print('load_lora', checkpoint_path)
 
     updates = defaultdict(dict)
     for key, value in state_dict.items():
