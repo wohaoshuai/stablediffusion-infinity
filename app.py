@@ -9,6 +9,7 @@ import torch
 from torch import autocast
 import diffusers
 session = new_session(model_name="isnet-general-use") 
+import lora
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
 
@@ -408,13 +409,15 @@ class StableDiffusionInpaint:
                     # model_name = "ckpt/realistic_vision_inpainting"
                     # model_name = "/home/ubuntu/epicrealism_newEra"
                     model_name = "/home/ubuntu/epicrealism_v1-inpainting"
+                    lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
 
                     # controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "SG161222/Realistic_Vision_V2.0"
                     controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
-                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
+                    inpaintOld = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
+                    inpaint = lora.load_lora_weights(inpaintOld, lora_name, 0.5, 'cuda', torch.float16)
                     print('use control net inpaint pipline - cuda with model:', model_name)
                 else:
                     # inpaint = StableDiffusionInpaintPipeline.from_pretrained(
