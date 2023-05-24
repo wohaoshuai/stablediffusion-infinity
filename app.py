@@ -12,6 +12,8 @@ session = new_session(model_name="isnet-general-use")
 import lora
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
+from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
+from transformers import AutoFeatureExtractor
 
 from diffusers.configuration_utils import FrozenDict
 from diffusers import (
@@ -406,6 +408,8 @@ class StableDiffusionInpaint:
                     #     vae=vae,
                     # )
 
+                    safety_checker = StableDiffusionSafetyChecker.from_pretrained("CompVis/stable-diffusion-safety-checker")
+                    feature_extractor = AutoFeatureExtractor.from_pretrained("CompVis/stable-diffusion-safety-checker")
                     model_name = "ckpt/realistic_vision_inpainting"
                     # model_name = "/home/ubuntu/epicrealism_newEra"
                     # model_name = "/home/ubuntu/epicrealism_v1-inpainting"
@@ -415,7 +419,7 @@ class StableDiffusionInpaint:
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "SG161222/Realistic_Vision_V2.0"
                     controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
-                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=None)
+                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=safety_checker, feature_extractor=feature_extractor)
                     lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
                     # inpaint = lora.load_lora_weights(inpaint, lora_name, 0.5, 'cuda', torch.float16)
                     # lora_name = "/home/ubuntu/lora/" + "FilmProvia2.safetensors"
