@@ -410,9 +410,9 @@ class StableDiffusionInpaint:
 
                     safety_checker = StableDiffusionSafetyChecker.from_pretrained("CompVis/stable-diffusion-safety-checker")
                     feature_extractor = AutoFeatureExtractor.from_pretrained("CompVis/stable-diffusion-safety-checker")
-                    model_name = "ckpt/realistic_vision_inpainting"
+                    # model_name = "ckpt/realistic_vision_inpainting"
                     # model_name = "/home/ubuntu/epicrealism_newEra"
-                    # model_name = "/home/ubuntu/epicrealism_v1-inpainting"
+                    model_name = "/home/ubuntu/epicrealism_v1-inpainting"
 
                     # controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
                     # model_name = "runwayml/stable-diffusion-inpainting"
