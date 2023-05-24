@@ -408,8 +408,8 @@ class StableDiffusionInpaint:
                     #     vae=vae,
                     # )
 
-                    safety_checker = StableDiffusionSafetyChecker.from_pretrained("CompVis/stable-diffusion-safety-checker")
-                    feature_extractor = AutoFeatureExtractor.from_pretrained("CompVis/stable-diffusion-safety-checker")
+                    # safety_checker = StableDiffusionSafetyChecker.from_pretrained("CompVis/stable-diffusion-safety-checker")
+                    # feature_extractor = AutoFeatureExtractor.from_pretrained("CompVis/stable-diffusion-safety-checker")
                     # model_name = "ckpt/realistic_vision_inpainting"
                     # model_name = "/home/ubuntu/epicrealism_newEra"
                     model_name = "/home/ubuntu/epicrealism_v1-inpainting"
@@ -419,7 +419,7 @@ class StableDiffusionInpaint:
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "SG161222/Realistic_Vision_V2.0"
                     controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
-                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet, safety_checker=safety_checker, feature_extractor=feature_extractor)
+                    inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
                     lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
                     # inpaint = lora.load_lora_weights(inpaint, lora_name, 0.5, 'cuda', torch.float16)
                     # lora_name = "/home/ubuntu/lora/" + "FilmProvia2.safetensors"
