@@ -9,6 +9,7 @@ import torch
 import torch.nn.functional as F
 from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 
+from diffusers.loaders import FromCkptMixin, LoraLoaderMixin, TextualInversionLoaderMixin
 from diffusers import AutoencoderKL, ControlNetModel, DiffusionPipeline, UNet2DConditionModel, logging
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput, StableDiffusionSafetyChecker
 from diffusers.schedulers import KarrasDiffusionSchedulers
@@ -217,7 +218,8 @@ def prepare_controlnet_conditioning_image(
     return controlnet_conditioning_image
 
 
-class StableDiffusionControlNetInpaintPipeline(DiffusionPipeline):
+# class StableDiffusionControlNetInpaintPipeline(DiffusionPipeline):
+class StableDiffusionPipeline(DiffusionPipeline, TextualInversionLoaderMixin, LoraLoaderMixin, FromCkptMixin):
     """
     Inspired by: https://github.com/haofanwang/ControlNet-for-Diffusers/
     """
