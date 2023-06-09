@@ -557,6 +557,7 @@ class StableDiffusionInpaint:
             canny_img = generate_canny_image(maskimg)
             # canny_img.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
+            strength = 0
             if True:
                 images = inpaint_func(
                     prompt=prompt,
