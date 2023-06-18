@@ -986,6 +986,7 @@ def run_outpaint(
 ):
     # print("sel_buffer_str:", sel_buffer_str)
     state = model_output_state
+
     data = base64.b64decode(str(sel_buffer_str))
     pil = Image.open(io.BytesIO(data))
 
@@ -1265,6 +1266,7 @@ with blocks as demo:
     model_output_state = gr.State(value=0)
     upload_output_state = gr.State(value=0)
     cancel_button = gr.Button("Cancel", elem_id="cancel", visible=False)
+    model_input_ref = gr.Textbox(visible=DEBUG_MODE, elem_id="input_ref", label="Input_ref")
     if not RUN_IN_SPACE:
 
         def setup_func(token_val, width, height, size, model_choice, model_path):
@@ -1339,7 +1341,7 @@ with blocks as demo:
             sd_scheduler,
             sd_scheduler_eta,
             interrogate_check,
-            # model_output_state,
+            model_input_ref,
         ],
         outputs=[model_output, sd_prompt],#model_output_state],
         _js=proceed_button_js,
