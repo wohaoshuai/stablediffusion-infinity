@@ -568,6 +568,8 @@ class StableDiffusionInpaint:
             ref_p = image_pil
             if ref_pil:
                 ref_p = ref_pil
+            else:
+                strength = 0
             processor = ContentShuffleDetector()
             control_image = processor(ref_p)
             control_image.save("control.png")
