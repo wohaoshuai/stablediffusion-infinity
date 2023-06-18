@@ -1014,7 +1014,6 @@ def run_outpaint(
     print("scheduler_eta:", scheduler_eta)
     print("interrogate_mode:", interrogate_mode)
     print("state:", state)
-    print('ref_buffer', ref_buffer_str)
     if interrogate_mode:
         if "interrogator" not in model:
             model["interrogator"] = Interrogator()
