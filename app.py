@@ -573,6 +573,7 @@ class StableDiffusionInpaint:
             processor = ContentShuffleDetector()
             control_image = processor(ref_p)
             control_image.save("control.png")
+            print('strenght+++++++', strength)
 
             if True:
                 images = inpaint_func(
