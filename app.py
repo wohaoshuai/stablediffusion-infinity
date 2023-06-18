@@ -505,6 +505,7 @@ class StableDiffusionInpaint:
         generate_num=1,
         scheduler="",
         scheduler_eta=0.0,
+        ref_pil=None,
         **kwargs,
     ):
         foreground_img = image_pil
@@ -564,8 +565,11 @@ class StableDiffusionInpaint:
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
             # strength = 0
 
+            ref_p = image_pil
+            if ref_pil:
+                ref_p = ref_pil
             processor = ContentShuffleDetector()
-            control_image = processor(image_pil)
+            control_image = processor(ref_p)
             control_image.save("control.png")
 
             if True:
@@ -977,12 +981,18 @@ def run_outpaint(
     generate_num,
     scheduler,
     scheduler_eta,
-    interrogate_mode
+    interrogate_mode,
+    ref_buffer_str=None
 ):
     # print("sel_buffer_str:", sel_buffer_str)
     state = model_output_state
     data = base64.b64decode(str(sel_buffer_str))
     pil = Image.open(io.BytesIO(data))
+
+    ref_pil = None
+    if ref_buffer_str:
+        ref_data = base64.b64decode(str(ref_buffer_str))
+        ref_pil = Image.open(io.BytesIO(ref_data))
     # pil.show()
     print("prompt_text:", prompt_text)
     print("negative_prompt_text:", negative_prompt_text)
@@ -1041,6 +1051,7 @@ def run_outpaint(
         enable_img2img=enable_img2img,
         width=width,
         height=height,
+        ref_pil=ref_pil,
     )
     base64_str_lst = []
     if enable_img2img:
