@@ -10,6 +10,7 @@ from torch import autocast
 import diffusers
 session = new_session(model_name="isnet-general-use") 
 import lora
+from controlnet_aux import ContentShuffleDetector
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
@@ -418,7 +419,11 @@ class StableDiffusionInpaint:
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "runwayml/stable-diffusion-inpainting"
                     # model_name = "SG161222/Realistic_Vision_V2.0"
-                    controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
+
+                    # controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
+                    checkpoint = "lllyasviel/control_v11e_sd15_shuffle"
+                    controlnet = ControlNetModel.from_pretrained(checkpoint, torch_dtype=torch.float16)
+
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
                     lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
                     # inpaint = lora.load_lora_weights(inpaint, lora_name, 0.5, 'cuda', torch.float16)
@@ -557,7 +562,12 @@ class StableDiffusionInpaint:
             canny_img = generate_canny_image(maskimg)
             # canny_img.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
-            strength = 0
+            # strength = 0
+
+            processor = ContentShuffleDetector()
+            control_image = processor(image_pil)
+            control_image.save("control.png")
+
             if True:
                 images = inpaint_func(
                     prompt=prompt,
@@ -565,7 +575,7 @@ class StableDiffusionInpaint:
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
                     mask_image=maskimg.resize((process_width, process_height)),
-                    controlnet_conditioning_image=canny_img.resize((process_width, process_height)),
+                    controlnet_conditioning_image=control_image.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
                     controlnet_conditioning_scale=strength,
