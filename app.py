@@ -421,7 +421,8 @@ class StableDiffusionInpaint:
                     # model_name = "SG161222/Realistic_Vision_V2.0"
 
                     # controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
-                    checkpoint = "lllyasviel/control_v11e_sd15_shuffle"
+                    # checkpoint = "lllyasviel/control_v11e_sd15_shuffle"
+                    checkpoint = "lllyasviel/control_v11p_sd15_canny"
                     controlnet = ControlNetModel.from_pretrained(checkpoint, torch_dtype=torch.float16)
 
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
@@ -566,14 +567,14 @@ class StableDiffusionInpaint:
             # strength = 0
 
             ref_p = image_pil
-            if ref_pil:
-                ref_p = ref_pil
-            else:
-                strength = 0
-            processor = ContentShuffleDetector()
-            control_image = processor(ref_p)
-            control_image.save("control.png")
-            print('strenght+++++++', strength)
+            # if ref_pil:
+            #     ref_p = ref_pil
+            # else:
+            #     strength = 0
+            # processor = ContentShuffleDetector()
+            # control_image = processor(ref_p)
+            # control_image.save("control.png")
+            # print('strenght+++++++', strength)
 
             if True:
                 images = inpaint_func(
@@ -582,7 +583,7 @@ class StableDiffusionInpaint:
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
                     mask_image=maskimg.resize((process_width, process_height)),
-                    controlnet_conditioning_image=control_image.resize((process_width, process_height)),
+                    controlnet_conditioning_image=maskimg.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
                     controlnet_conditioning_scale=strength,
