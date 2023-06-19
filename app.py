@@ -335,7 +335,7 @@ def draw_horizontal_tangent_from_pil_image(mask_image):
     bottom_pixel = white_pixels[np.argmax(white_pixels[:, 1])]
 
     # 创建一个空的结果图像
-    # result = mask_image #np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
+    result = mask #np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
 
     # 画出水平的切线
     cv2.line(mask, (0, bottom_pixel[1]), (mask.shape[1], bottom_pixel[1]), (255, 255, 255), 2)
