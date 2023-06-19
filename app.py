@@ -11,6 +11,7 @@ import diffusers
 session = new_session(model_name="isnet-general-use") 
 import lora
 from controlnet_aux import ContentShuffleDetector
+from controlnet_aux import PidiNetDetector, HEDdetector
 
 assert tuple(map(int,diffusers.__version__.split(".")))  >= (0,9,0), "Please upgrade diffusers to 0.9.0"
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
@@ -575,11 +576,17 @@ class StableDiffusionInpaint:
             # if ref_pil:
             #     ref_p = ref_pil
             # else:
-            strength = 0.75
+            strength = 0.6
+
+            processor = HEDdetector.from_pretrained('lllyasviel/Annotators')
+            processor = PidiNetDetector.from_pretrained('lllyasviel/Annotators')
+            control_image = processor(maskimg, safe=True)
+
             # processor = ContentShuffleDetector()
             # control_image = processor(ref_p)
             maskimg.save("maskimg.png")
             canny_img.save("canny_img.png")
+            control_image.save("control_img.png")
             # print('strenght+++++++', strength)
 
             if True:
@@ -589,7 +596,7 @@ class StableDiffusionInpaint:
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
                     mask_image=maskimg.resize((process_width, process_height)),
-                    controlnet_conditioning_image=canny_img.resize((process_width, process_height)),
+                    controlnet_conditioning_image=control_image.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
                     controlnet_conditioning_scale=strength,
