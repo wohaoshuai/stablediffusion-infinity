@@ -324,6 +324,25 @@ def erode_image(image, kernel_size=(3,3), iterations=1):
 
     return eroded_pil_image
 
+def draw_horizontal_tangent_from_pil_image(mask_image):
+    # 将PIL图像转换为numpy数组
+    mask = np.array(mask_image)
+
+    # 获取掩模中白色像素的坐标
+    white_pixels = np.column_stack(np.where(mask == 255))
+
+    # 找到最下面的白色像素的坐标
+    bottom_pixel = white_pixels[np.argmax(white_pixels[:, 1])]
+
+    # 创建一个空的结果图像
+    result = np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
+
+    # 画出水平的切线
+    cv2.line(result, (0, bottom_pixel[1]), (mask.shape[1], bottom_pixel[1]), (0, 0, 255), 2)
+
+    # 将结果图像转换为PIL图像格式并返回
+    return Image.fromarray(result)
+
 def load_learned_embed_in_clip(
     learned_embeds_path, text_encoder, tokenizer, token=None
 ):
@@ -563,9 +582,9 @@ class StableDiffusionInpaint:
             mask_image = Image.fromarray(mask)
             input_foreground = remove(image_pil, session=session, only_mask=True)
             input_foreground = invert_image_colors(input_foreground)
-            maskimg = img_to_bw(foreground_img)
+            maskimg_wb = img_to_bw(foreground_img)
             # input_foreground.show()
-            maskimg = invert_image_colors(maskimg)
+            maskimg = invert_image_colors(maskimg_wb)
             # maskimg.show()
             canny_img = generate_canny_image(maskimg)
             # canny_img.show()
@@ -581,12 +600,16 @@ class StableDiffusionInpaint:
             processor = HEDdetector.from_pretrained('lllyasviel/Annotators')
             processor = PidiNetDetector.from_pretrained('lllyasviel/Annotators')
             control_image = processor(maskimg, safe=True)
+            new_canny = draw_horizontal_tangent_from_pil_image(canny_img)
+            new_mask = draw_horizontal_tangent_from_pil_image(maskimg_wb)
 
             # processor = ContentShuffleDetector()
             # control_image = processor(ref_p)
             maskimg.save("maskimg.png")
             canny_img.save("canny_img.png")
             control_image.save("control_img.png")
+            new_canny.save("new_canny.png")
+            new_mask.save("new_mask.png")
             # print('strenght+++++++', strength)
 
             if True:
