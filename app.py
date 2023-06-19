@@ -427,9 +427,9 @@ class StableDiffusionInpaint:
 
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
                     # inpaint.load_textual_inversion()
-                    inpaint.load_textual_inversion(
-                        "sayakpaul/EasyNegative-test", weight_name="EasyNegative.safetensors", token="EasyNegative"
-                    )
+                    # inpaint.load_textual_inversion(
+                    #     "sayakpaul/EasyNegative-test", weight_name="EasyNegative.safetensors", token="EasyNegative"
+                    # )
                     # lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
                     lora_name = "/home/ubuntu/lora/add_detail.safetensors"
                     inpaint = lora.load_lora_weights(inpaint, lora_name, 0.9, 'cuda', torch.float16)
