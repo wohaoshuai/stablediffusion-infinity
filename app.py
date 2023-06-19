@@ -597,7 +597,7 @@ class StableDiffusionInpaint:
             # if ref_pil:
             #     ref_p = ref_pil
             # else:
-            strength = 0.6
+            strength = 0.4
 
             processor = HEDdetector.from_pretrained('lllyasviel/Annotators')
             processor = PidiNetDetector.from_pretrained('lllyasviel/Annotators')
