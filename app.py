@@ -566,7 +566,7 @@ class StableDiffusionInpaint:
             # input_foreground.show()
             maskimg = invert_image_colors(maskimg)
             # maskimg.show()
-            canny_img = generate_canny_image(foreground_img)
+            canny_img = generate_canny_image(maskimg)
             # canny_img.show()
             # mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 8))
             # strength = 0
@@ -575,7 +575,7 @@ class StableDiffusionInpaint:
             # if ref_pil:
             #     ref_p = ref_pil
             # else:
-            strength = 0.6
+            strength = 0.75
             # processor = ContentShuffleDetector()
             # control_image = processor(ref_p)
             # control_image.save("control.png")
