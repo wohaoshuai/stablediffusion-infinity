@@ -426,8 +426,9 @@ class StableDiffusionInpaint:
                     controlnet = ControlNetModel.from_pretrained(checkpoint, torch_dtype=torch.float16)
 
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
-                    lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
-                    # inpaint = lora.load_lora_weights(inpaint, lora_name, 0.5, 'cuda', torch.float16)
+                    # lora_name = "/home/ubuntu/lora/simple_background_v2.safetensors"
+                    lora_name = "/home/ubuntu/lora/add_detail.safetensors"
+                    inpaint = lora.load_lora_weights(inpaint, lora_name, 0.9, 'cuda', torch.float16)
                     # lora_name = "/home/ubuntu/lora/" + "FilmProvia2.safetensors"
                     # inpaint = lora.load_lora_weights(inpaint, lora_name, 0.5, 'cuda', torch.float16)
                     print('use control net inpaint pipline - cuda with model:', model_name)
