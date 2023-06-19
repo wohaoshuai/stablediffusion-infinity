@@ -338,7 +338,7 @@ def draw_horizontal_tangent_from_pil_image(mask_image):
     result = mask #np.zeros((mask.shape[0], mask.shape[1], 3), np.uint8)
 
     # 画出水平的切线
-    cv2.line(mask, (0, bottom_pixel[1]), (mask.shape[1], bottom_pixel[1]), (255, 255, 255), 1)
+    cv2.line(mask, (0, bottom_pixel[1]), (mask.shape[1], bottom_pixel[1]), (255, 255, 255), 2)
 
     # 将结果图像转换为PIL图像格式并返回
     return Image.fromarray(result)
@@ -602,6 +602,7 @@ class StableDiffusionInpaint:
             control_image = processor(maskimg, safe=True)
             new_canny = draw_horizontal_tangent_from_pil_image(canny_img)
             new_mask = draw_horizontal_tangent_from_pil_image(maskimg_wb)
+            new_control_image = draw_horizontal_tangent_from_pil_image(control_image) 
 
             # processor = ContentShuffleDetector()
             # control_image = processor(ref_p)
@@ -610,6 +611,7 @@ class StableDiffusionInpaint:
             control_image.save("control_img.png")
             new_canny.save("new_canny.png")
             new_mask.save("new_mask.png")
+            new_control_image.save("new_control_image.png")
             # print('strenght+++++++', strength)
 
             if True:
@@ -619,7 +621,7 @@ class StableDiffusionInpaint:
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
                     mask_image=maskimg.resize((process_width, process_height)),
-                    controlnet_conditioning_image=new_canny.resize((process_width, process_height)),
+                    controlnet_conditioning_image=new_control_image.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
                     controlnet_conditioning_scale=strength,
