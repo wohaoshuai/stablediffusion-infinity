@@ -619,7 +619,7 @@ class StableDiffusionInpaint:
                         (process_width, process_height), resample=SAMPLING_MODE
                     ),
                     mask_image=maskimg.resize((process_width, process_height)),
-                    controlnet_conditioning_image=control_image.resize((process_width, process_height)),
+                    controlnet_conditioning_image=new_mask.resize((process_width, process_height)),
                     width=process_width,
                     height=process_height,
                     controlnet_conditioning_scale=strength,
