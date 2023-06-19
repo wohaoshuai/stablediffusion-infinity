@@ -578,7 +578,8 @@ class StableDiffusionInpaint:
             strength = 0.75
             # processor = ContentShuffleDetector()
             # control_image = processor(ref_p)
-            # control_image.save("control.png")
+            maskimg.save("maskimg.png")
+            canny_img.save("canny_img.png")
             # print('strenght+++++++', strength)
 
             if True:
