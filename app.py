@@ -442,7 +442,9 @@ class StableDiffusionInpaint:
 
                     # controlnet = ControlNetModel.from_pretrained("lllyasviel/sd-controlnet-canny", torch_dtype=torch.float16)
                     # checkpoint = "lllyasviel/control_v11e_sd15_shuffle"
-                    checkpoint = "lllyasviel/control_v11p_sd15_canny"
+                    # checkpoint = "lllyasviel/control_v11p_sd15_canny"
+                    # checkpoint = "lllyasviel/control_v11p_sd15_canny"
+                    checkpoint = "lllyasviel/control_v11p_sd15_softedge"
                     controlnet = ControlNetModel.from_pretrained(checkpoint, torch_dtype=torch.float16)
 
                     inpaint = StableDiffusionControlNetInpaintPipeline.from_pretrained(model_name, vae=vae, torch_dtype=torch.float16, controlnet=controlnet)
